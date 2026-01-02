@@ -6,11 +6,10 @@
 //   deletePost(name)
 //   generateAICaption(name)
 
-// Prefer a relative base in dev so Vite's proxy handles CORS; fall back to the hosted API for prod.
-const API_BASE =
-  import.meta.env.VITE_API_BASE || (import.meta.env.DEV
-    ? "/api"
-    : "https://larry-media-api-axh2emfhfxf3gxaa.germanywestcentral-01.azurewebsites.net/api");
+// API base selection:
+// - Prefer VITE_API_BASE when explicitly provided (bypasses proxies).
+// - Otherwise default to "/api" so Vite dev proxy and Vercel rewrites handle routing.
+const API_BASE = import.meta.env.VITE_API_BASE || "/api";
 
 async function checkResJson(res) {
   if (!res.ok) {
