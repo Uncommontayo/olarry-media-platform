@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PostCard from "../components/PostCard";
-import { fetchFeed, likePost, deletePost, generateAICaption } from "../api.js";
+import { fetchFeed, likePost, deletePost, generateAICaption } from "../api";
 
 export default function Feed({ search }) {
   const [posts, setPosts] = useState([]);
