@@ -1,6 +1,8 @@
-# larry-media-api (Azure Functions backend) 🔧
+# larry-media-platform 🔧
 
-Small Azure Functions backend for an image-sharing app. Handles upload, list, like, delete, and lightweight AI captions. Core logic lives in [function_app.py](function_app.py).
+This repo is organized as a backend folder ready for Azure Functions. Drop your frontend alongside (e.g., in `frontend/`) without touching backend wiring.
+
+Backend lives in [backend/function_app.py](backend/function_app.py) and provides upload, list, like, delete, and lightweight AI captions.
 
 ---
 
@@ -23,9 +25,9 @@ Small Azure Functions backend for an image-sharing app. Handles upload, list, li
 
 ## Quick start (local) 🚀
 
-1. Create and activate a virtual environment (recommended `.venv`).
-2. Install dependencies: `python -m pip install -r requirements.txt` (or run the VS Code task `pip install (functions)`).
-3. Configure secrets: add `STORAGE_CONNECTION_STRING` to `local.settings.json` or your shell environment. Example snippet:
+1. From repo root, create/activate a virtual environment (recommended `.venv`).
+2. Install backend deps: `cd backend && python -m pip install -r requirements.txt` (or run the VS Code task `pip install (functions)`).
+3. Configure secrets in `backend/local.settings.json` or your shell environment. Example snippet:
 
    ```json
    {
@@ -38,7 +40,7 @@ Small Azure Functions backend for an image-sharing app. Handles upload, list, li
    }
    ```
 
-4. Start the Functions host: `func host start` (or the VS Code task `func: host start`).
+4. Start the Functions host from repo root (task sets cwd automatically): `func host start` (or the VS Code task `func: host start`).
 
 Local base URL: `http://localhost:7071/api/<route>`.
 
@@ -98,4 +100,4 @@ curl "http://localhost:7071/api/ai_caption?name=<blob-name>"
 
 ---
 
-Need more detail? See [function_app.py](function_app.py).
+Need more detail? See [backend/function_app.py](backend/function_app.py).
