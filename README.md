@@ -19,3 +19,8 @@ The backend API is hosted separately; update `API_PROXY_TARGET` in `frontend/vit
 	- Value: paste the token
 3. Push to `main` (or re-run the "Deploy Azure Static Web Apps" workflow) to deploy.
 4. The workflow builds from `frontend/` and uses `VITE_API_BASE` pointing to the Azure Functions API.
+
+## Primary hosting: Vercel
+- Vercel is the primary deploy target. Build settings: project root `frontend`, build command `npm run build`, output `dist`.
+- `vercel.json` rewrites `/api/*` to the Azure Functions backend; frontend uses `API_BASE=/api` by default with optional `VITE_API_BASE` override.
+- If Azure Static Web Apps is blocked by policy, rely on Vercel for prod hosting.
