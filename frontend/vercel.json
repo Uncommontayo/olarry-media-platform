@@ -9,8 +9,8 @@
       }
     }
   ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "https://larry-media-api-axh2emfhfxf3gxaa.germanywestcentral-01.azurewebsites.net/api/$1" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "https://larry-media-api-axh2emfhfxf3gxaa.germanywestcentral-01.azurewebsites.net/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
