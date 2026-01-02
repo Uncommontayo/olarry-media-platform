@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { uploadPostWithProgress, deletePost } from "../api.js";
+import { uploadPostWithProgress, deletePost } from "../api";
 
 const API_BASE =
   "https://larry-media-api-axh2emfhfxf3gxaa.germanywestcentral-01.azurewebsites.net/api";

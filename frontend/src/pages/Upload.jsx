@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { uploadPostWithProgress, uploadPost } from "../api.js";
+import { uploadPostWithProgress, uploadPost } from "../api";
 
 export default function Upload({ onDone }) {
   const [file, setFile] = useState(null);
