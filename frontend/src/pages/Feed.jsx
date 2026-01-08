@@ -1,104 +1,182 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import PostCard from "../components/PostCard";
-import { fetchFeed, likePost, deletePost, generateAICaption } from "../api";
+import MediaDetail from "../components/MediaDetail";
+import { fetchFeed, searchMedia, likePost } from "../api";
+import { theme } from "../styles/theme";
 
-export default function Feed({ search }) {
+export default function Feed({ search, filterUsername }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedMedia, setSelectedMedia] = useState(null);
+  const [likingPosts, setLikingPosts] = useState(new Set());
 
-  async function loadFeed() {
+  const loadFeed = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await fetchFeed();
-      setPosts(Array.isArray(data) ? data : []);
+      const data = search ? await searchMedia(search) : await fetchFeed();
+      const validPosts = Array.isArray(data) ? data : [];
+      
+      // Filter out profile pictures
+      const visiblePosts = validPosts.filter((p) => p.caption !== '__profile_pic__');
+      
+      setPosts(visiblePosts);
     } catch (e) {
-      console.error("fetchFeed failed:", e);
+      console.error("Failed to load feed:", e);
       setPosts([]);
     } finally {
       setLoading(false);
     }
-  }
-
-  // Build a quick map of username -> profile picture URL by scanning '__profile_pic__' posts (latest wins)
-  const profileMap = {};
-  for (const p of posts) {
-    if (p.caption === '__profile_pic__' && !profileMap[p.username]) {
-      profileMap[p.username] = p.url;
-    }
-  }
-
-  // Exclude profile picture posts from the visible feed
-  const visiblePosts = posts.filter((p) => p.caption !== '__profile_pic__');
-
-  const q = (search || "").toLowerCase();
-  const filtered = visiblePosts.filter((p) =>
-    (p.caption || "").toLowerCase().includes(q) ||
-    (p.username || "").toLowerCase().includes(q)
-  );
+  }, [search]);
 
   useEffect(() => {
     loadFeed();
-  }, []);
+  }, [loadFeed]);
 
+  // Filter by username if needed
+  let filteredPosts = posts;
+  if (filterUsername) {
+    filteredPosts = posts.filter(p => p.username === filterUsername);
+  }
+
+  // Apply search filter (caption, username, location, tagged people)
+  if (search) {
+    const q = search.toLowerCase();
+    filteredPosts = filteredPosts.filter(p =>
+      (p.caption || "").toLowerCase().includes(q) ||
+      (p.title || "").toLowerCase().includes(q) ||
+      (p.username || "").toLowerCase().includes(q) ||
+      (p.location || "").toLowerCase().includes(q) ||
+      (p.tagged_people || []).some(tag => tag.toLowerCase().includes(q))
+    );
+  }
 
   const handleLike = async (name) => {
-    // optimistic UI update
+    // Prevent double-clicks
+    if (likingPosts.has(name)) return;
+    
+    setLikingPosts(prev => new Set(prev).add(name));
+    
+    // Optimistic update
     setPosts((prev) => prev.map((p) => (p.name === name ? { ...p, likes: (p.likes || 0) + 1 } : p)));
+    
     try {
-      await likePost(name);
-    } catch (err) {
-      console.error("likePost failed:", err);
-      loadFeed();
-    }
-  };
-
-  const handleDelete = async (name) => {
-    if (!window.confirm("Delete this post permanently?")) return;
-    const prev = posts;
-    setPosts((p) => p.filter((x) => x.name !== name));
-    try {
-      await deletePost(name);
-    } catch (err) {
-      console.error("deletePost failed:", err);
-      setPosts(prev);
-      // surface a simple user-visible error
-      window.alert(`Delete failed: ${err?.message || err}`);
-    }
-  };
-
-  const handleAICaption = async (name) => {
-    try {
-      const res = await generateAICaption(name);
-      if (res?.caption) {
-        setPosts((prev) => prev.map((p) => (p.name === name ? { ...p, caption: res.caption } : p)));
+      const result = await likePost(name);
+      // Update with actual count from backend
+      if (result && result.likes !== undefined) {
+        setPosts((prev) => prev.map((p) => (p.name === name ? { ...p, likes: result.likes } : p)));
       }
     } catch (err) {
-      console.error("AICaption failed:", err);
+      console.error("Like failed:", err);
+      // Revert optimistic update on error
+      setPosts((prev) => prev.map((p) => (p.name === name ? { ...p, likes: (p.likes || 1) - 1 } : p)));
+    } finally {
+      // Re-enable after 1 second
+      setTimeout(() => {
+        setLikingPosts(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(name);
+          return newSet;
+        });
+      }, 1000);
     }
   };
 
   if (loading) {
-    return <p style={{ textAlign: "center" }}>Loading feed…</p>;
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '60vh',
+        color: theme.colors.textMuted
+      }}>
+        <p>Loading feed…</p>
+      </div>
+    );
   }
 
   return (
-    <div className="container">
-      <div className="feed-grid" role="list">
-        {filtered.length === 0 ? (
-          <p style={{ textAlign: "center", width: "100%" }}>No posts found.</p>
+    <>
+      <div style={{
+        maxWidth: 1400,
+        margin: '0 auto',
+        padding: '24px 16px'
+      }}>
+        {/* Search Results Header */}
+        {search && (
+          <div style={{
+            marginBottom: 24,
+            padding: 16,
+            background: theme.colors.card,
+            borderRadius: theme.radius.md,
+            boxShadow: theme.shadow.soft
+          }}>
+            <h2 style={{
+              margin: 0,
+              fontSize: 20,
+              color: theme.colors.text,
+              fontWeight: 600
+            }}>
+              {filteredPosts.length} result{filteredPosts.length !== 1 ? 's' : ''} for "{search}"
+            </h2>
+          </div>
+        )}
+
+        {filterUsername && (
+          <div style={{
+            marginBottom: 24,
+            padding: 16,
+            background: theme.colors.card,
+            borderRadius: theme.radius.md,
+            boxShadow: theme.shadow.soft
+          }}>
+            <h2 style={{
+              margin: 0,
+              fontSize: 20,
+              color: theme.colors.text,
+              fontWeight: 600
+            }}>
+              Posts by @{filterUsername}
+            </h2>
+          </div>
+        )}
+
+        {/* Grid */}
+        {filteredPosts.length === 0 ? (
+          <div style={{
+            textAlign: 'center',
+            padding: 60,
+            color: theme.colors.textMuted
+          }}>
+            <p style={{ fontSize: 18, margin: 0 }}>No posts found.</p>
+            <p style={{ fontSize: 14, marginTop: 8 }}>Try a different search or check back later.</p>
+          </div>
         ) : (
-          filtered.map((post) => (
-            <PostCard
-              key={post.name}
-              post={post}
-              profileUrl={profileMap[post.username]}
-              onLike={() => handleLike(post.name)}
-              onDelete={() => handleDelete(post.name)}
-              onAICaption={() => handleAICaption(post.name)}
-            />
-          ))
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+            gap: 20,
+            marginBottom: 40
+          }}>
+            {filteredPosts.map((post) => (
+              <PostCard
+                key={post.name}
+                post={post}
+                onLike={() => handleLike(post.name)}
+                onClick={() => setSelectedMedia(post)}
+              />
+            ))}
+          </div>
         )}
       </div>
-    </div>
+
+      {/* Media Detail Modal */}
+      {selectedMedia && (
+        <MediaDetail
+          media={selectedMedia}
+          onClose={() => setSelectedMedia(null)}
+        />
+      )}
+    </>
   );
 }

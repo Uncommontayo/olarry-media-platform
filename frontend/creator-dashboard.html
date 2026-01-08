@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creator Dashboard - O'larry</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #E8E8E8;
+      color: #1A1A1A;
+      min-height: 100vh;
+    }
+
+    /* Navigation */
+    .navbar {
+      background: #2A2A2A;
+      border-bottom: 1px solid #D0D0D0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #F5F5F5;
+      cursor: pointer;
+    }
+
+    .logo-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8B8B8B, #4A90E2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .logo-text {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .nav-link {
+      color: #B8B8B8;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      background: rgba(255,255,255,0.1);
+      color: #F5F5F5;
+    }
+
+    .nav-link.active {
+      color: #4A90E2;
+      background: rgba(74, 144, 226, 0.15);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .btn-upload {
+      background: linear-gradient(135deg, #4A90E2, #357ABD);
+      color: #fff;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+      white-space: nowrap;
+    }
+
+    .btn-upload:hover {
+      background: linear-gradient(135deg, #3A7BC8, #2A6BA8);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(74, 144, 226, 0.5);
+    }
+
+    .user-menu {
+      position: relative;
+    }
+
+    .user-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      cursor: pointer;
+      color: #F5F5F5;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .user-button:hover {
+      background: rgba(255,255,255,0.15);
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #8B8B8B;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: #F5F5F5;
+      border: 1px solid #D0D0D0;
+      border-radius: 8px;
+      min-width: 180px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      display: none;
+    }
+
+    .dropdown-menu.show {
+      display: block;
+    }
+
+    .dropdown-item {
+      display: block;
+      width: 100%;
+      padding: 12px 16px;
+      border: none;
+      background: none;
+      text-align: left;
+      cursor: pointer;
+      font-size: 14px;
+      color: #1A1A1A;
+      transition: background 0.2s;
+    }
+
+    .dropdown-item:hover {
+      background: #E8E8E8;
+    }
+
+    .dropdown-item.danger {
+      color: #E74C3C;
+    }
+
+    /* Main Content */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .header {
+      margin-bottom: 32px;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1A1A1A;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      color: #6B6B6B;
+      font-size: 16px;
+    }
+
+    .stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      flex: 1;
+      background: #F5F5F5;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #4A90E2;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      color: #6B6B6B;
+      font-size: 14px;
+    }
+
+    /* Media Grid */
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .media-card {
+      background: #F5F5F5;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+
+    .media-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+    }
+
+    .media-thumbnail {
+      position: relative;
+      padding-bottom: 100%;
+      background: #D0D0D0;
+      overflow: hidden;
+    }
+
+    .media-thumbnail img,
+    .media-thumbnail video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .video-indicator {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50px;
+      height: 50px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      pointer-events: none;
+    }
+
+    .media-content {
+      padding: 16px;
+    }
+
+    .media-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1A1A1A;
+      margin-bottom: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .media-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #6B6B6B;
+    }
+
+    .media-stat {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .media-date {
+      font-size: 12px;
+      color: #9E9E9E;
+      margin-bottom: 12px;
+    }
+
+    .media-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #D0D0D0;
+      background: #fff;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .btn-action:hover {
+      background: #E8E8E8;
+    }
+
+    .btn-action.danger {
+      color: #E74C3C;
+      border-color: #E74C3C;
+    }
+
+    .btn-action.danger:hover {
+      background: #FFE5E5;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #6B6B6B;
+    }
+
+    .empty-state h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: #1A1A1A;
+    }
+
+    .empty-state p {
+      margin-bottom: 24px;
+      font-size: 16px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6B6B6B;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #D0D0D0;
+      border-top-color: #4A90E2;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(42, 42, 42, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #F5F5F5;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      color: #1A1A1A;
+      margin-bottom: 16px;
+    }
+
+    .modal-body {
+      color: #6B6B6B;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .btn-modal {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 14px;
+    }
+
+    .btn-cancel {
+      background: #D0D0D0;
+      color: #1A1A1A;
+    }
+
+    .btn-cancel:hover {
+      background: #B8B8B8;
+    }
+
+    .btn-delete {
+      background: #E74C3C;
+      color: #fff;
+    }
+
+    .btn-delete:hover {
+      background: #C0392B;
+    }
+
+    @media (max-width: 768px) {
+      .nav-container {
+        flex-wrap: wrap;
+      }
+
+      .stats {
+        flex-direction: column;
+      }
+
+      .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-left">
+        <a href="/" class="logo">
+          <div class="logo-circle">O</div>
+          <span class="logo-text">O'larry Creator</span>
+        </a>
+        <a href="/creator-dashboard.html" class="nav-link active">My Uploads</a>
+        <a href="/profile.html" class="nav-link">Profile</a>
+      </div>
+      <div class="nav-right">
+        <a href="/upload-media.html" class="btn-upload">Upload New</a>
+        <div class="user-menu">
+          <button class="user-button" id="userMenuBtn">
+            <div class="user-avatar" id="userAvatar">U</div>
+            <span id="username">User</span>
+            <span>▼</span>
+          </button>
+          <div class="dropdown-menu" id="dropdownMenu">
+            <button class="dropdown-item danger" onclick="handleLogout()">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="header">
+      <h1>My Uploads</h1>
+      <p>Manage your media content and track performance</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-value" id="totalPosts">0</div>
+        <div class="stat-label">Total Posts</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalLikes">0</div>
+        <div class="stat-label">Total Likes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalComments">0</div>
+        <div class="stat-label">Total Comments</div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Loading your uploads...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <h2>No uploads yet</h2>
+      <p>Start sharing your creative work with the O'larry community</p>
+      <a href="/upload-media.html" class="btn-upload">Upload Your First Media</a>
+    </div>
+
+    <!-- Media Grid -->
+    <div class="media-grid" id="mediaGrid"></div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Delete Post?</h2>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete "<strong id="deleteTitle"></strong>"? This action cannot be undone.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-modal btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+        <button class="btn-modal btn-delete" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comments Modal -->
+  <div class="modal" id="commentsModal">
+    <div class="modal-content" style="max-width: 600px; max-height: 80vh; display: flex; flex-direction: column;">
+      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>Comments</h2>
+        <button onclick="closeCommentsModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; padding: 0; color: #666;">&times;</button>
+      </div>
+      <div class="modal-body" style="flex: 1; overflow-y: auto; padding: 16px; min-height: 200px;">
+        <div id="commentsLoading" style="text-align: center; color: #999; padding: 40px;">
+          <div style="font-size: 32px; margin-bottom: 16px;">💬</div>
+          <div>Loading comments...</div>
+        </div>
+        <div id="commentsList" style="display: none;"></div>
+        <div id="commentsEmpty" style="display: none; text-align: center; color: #999; padding: 40px;">
+          <div style="font-size: 48px; margin-bottom: 16px;">💭</div>
+          <div>No comments yet. Be the first!</div>
+        </div>
+      </div>
+      <div style="padding: 16px; border-top: 1px solid #D0D0D0; background: #F5F5F5;">
+        <div style="display: flex; gap: 8px;">
+          <textarea 
+            id="newCommentText" 
+            placeholder="Add a comment..." 
+            style="flex: 1; padding: 10px; border: 1px solid #D0D0D0; border-radius: 8px; resize: none; height: 60px; font-family: inherit;"
+          ></textarea>
+          <button 
+            id="postCommentBtn"
+            onclick="postComment()" 
+            style="padding: 0 20px; border-radius: 8px; border: none; background: #4A90E2; color: #fff; cursor: pointer; font-size: 14px; font-weight: 600;"
+          >
+            Post
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:7071/api';
+    let currentUsername = '';
+    let deleteMediaName = '';
+    let currentCommentsMediaName = '';
+    let currentComments = [];
+
+    // Check authentication and verify role with backend
+    async function checkAuth() {
+      const token = localStorage.getItem('authToken');
+
+      if (!token) {
+        window.location.href = '/login.html';
+        return false;
+      }
+
+      try {
+        // Verify token with backend and get current role
+        const response = await fetch(`${API_BASE}/verify_token`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          // Token invalid, logout
+          console.error('Token verification failed');
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('username');
+          window.location.href = '/login.html';
+          return false;
+        }
+
+        const data = await response.json();
+        
+        if (!data.valid) {
+          // Token invalid, logout
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('username');
+          window.location.href = '/login.html';
+          return false;
+        }
+
+        // Update localStorage with current role from database
+        localStorage.setItem('userRole', data.role);
+        localStorage.setItem('username', data.username);
+        
+        console.log('✅ Auth verified. Role:', data.role, 'Username:', data.username);
+
+        // Check if user is creator
+        if (data.role !== 'creator') {
+          console.warn('⚠️ User is not a creator. Redirecting to consumer dashboard...');
+          window.location.href = '/';
+          return false;
+        }
+
+        currentUsername = data.username || 'User';
+        document.getElementById('username').textContent = `@${currentUsername}`;
+        document.getElementById('userAvatar').textContent = currentUsername[0]?.toUpperCase() || 'U';
+        
+        return true;
+      } catch (error) {
+        console.error('Auth check error:', error);
+        window.location.href = '/login.html';
+        return false;
+      }
+    }
+
+    // Load media
+    async function loadMedia() {
+      if (!checkAuth()) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/list_media`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
+
+        if (!response.ok) throw new Error('Failed to load media');
+
+        const data = await response.json();
+        const myMedia = Array.isArray(data) 
+          ? data.filter(m => m.username === currentUsername && m.caption !== '__profile_pic__')
+          : [];
+
+        displayMedia(myMedia);
+        updateStats(myMedia);
+      } catch (error) {
+        console.error('Error loading media:', error);
+        document.getElementById('loading').innerHTML = '<p style="color: #E74C3C;">Failed to load media. Please try again.</p>';
+      }
+    }
+
+    function displayMedia(media) {
+      const loading = document.getElementById('loading');
+      const emptyState = document.getElementById('emptyState');
+      const grid = document.getElementById('mediaGrid');
+
+      loading.style.display = 'none';
+
+      if (media.length === 0) {
+        emptyState.style.display = 'block';
+        grid.style.display = 'none';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      grid.style.display = 'grid';
+      grid.innerHTML = '';
+
+      media.forEach(item => {
+        const card = createMediaCard(item);
+        grid.appendChild(card);
+      });
+    }
+
+    function createMediaCard(media) {
+      const card = document.createElement('div');
+      card.className = 'media-card';
+      
+      // Direct Azure Blob Storage URL from backend response
+      const mediaUrl = media.url;
+      
+      const isVideo = media.name?.includes('.mp4') || media.name?.includes('.mov') || media.name?.includes('.webm');
+      const uploadDate = media.timestamp ? new Date(media.timestamp).toLocaleDateString() : 'Unknown';
+
+      card.innerHTML = `
+        <div class="media-thumbnail" onclick="viewMedia('${media.name}')">
+          ${isVideo ? `
+            <video src="${mediaUrl}" onerror="this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;color:#999;\\'><div style=\\'text-align:center;\\'><div style=\\'font-size:32px;\\'>📹</div><div>Video unavailable</div></div></div>'"></video>
+            <div class="video-indicator">▶</div>
+          ` : `
+            <img src="${mediaUrl}" alt="${media.title || media.caption || 'Media'}" loading="lazy" onerror="console.error('Image load error for:', '${mediaUrl}'); console.error('Media name:', '${media.name}'); this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;color:#999;background:#f5f5f5;\\'><div style=\\'text-align:center;padding:20px;\\'><div style=\\'font-size:32px;\\'>🖼️</div><div style=\\'margin-top:8px;\\'>Image unavailable</div><div style=\\'font-size:10px;margin-top:8px;color:#aaa;word-break:break-all;max-width:200px;\\'>Name: ${media.name}</div></div></div>'">
+          `}
+        </div>
+        <div class="media-content">
+          <div class="media-title">${media.title || media.caption || 'Untitled'}</div>
+          <div class="media-stats">
+            <button class="btn-like" onclick="likeMedia('${media.name}'); event.stopPropagation();" style="background:none;border:none;cursor:pointer;padding:4px 8px;font-size:14px;color:#666;transition:all 0.2s;" onmouseover="this.style.color='#E74C3C';this.style.transform='scale(1.1)'" onmouseout="this.style.color='#666';this.style.transform='scale(1)'">
+              ❤️ <span id="likes-${media.name}">${media.likes || 0}</span>
+            </button>
+            <button class="btn-comment" onclick="openCommentsModal('${media.name}'); event.stopPropagation();" style="background:none;border:none;cursor:pointer;padding:4px 8px;font-size:14px;color:#666;transition:all 0.2s;" onmouseover="this.style.color='#4A90E2';this.style.transform='scale(1.1)'" onmouseout="this.style.color='#666';this.style.transform='scale(1)'">
+              💬 <span id="comments-${media.name}">${media.comment_count || media.comments || 0}</span>
+            </button>
+          </div>
+          <div class="media-date">Uploaded: ${uploadDate}</div>
+          <div class="media-actions">
+            <button class="btn-action" onclick="viewMedia('${media.name}'); event.stopPropagation();">View Details</button>
+            <button class="btn-action danger" onclick="showDeleteModal('${media.name}', '${(media.title || media.caption || 'this post').replace(/'/g, "\\'")}'); event.stopPropagation();">Delete</button>
+          </div>
+        </div>
+      `;
+
+      return card;
+    }
+
+    function updateStats(media) {
+      const totalPosts = media.length;
+      const totalLikes = media.reduce((sum, m) => sum + (m.likes || 0), 0);
+      const totalComments = media.reduce((sum, m) => sum + (m.comments || 0), 0);
+
+      document.getElementById('totalPosts').textContent = totalPosts;
+      document.getElementById('totalLikes').textContent = totalLikes;
+      document.getElementById('totalComments').textContent = totalComments;
+    }
+
+    function viewMedia(name) {
+      // Redirect to consumer interface with this media
+      window.location.href = `/?media=${encodeURIComponent(name)}`;
+    }
+
+    async function likeMedia(name) {
+      const likeBtn = event.currentTarget;
+      
+      // Prevent double-clicks
+      if (likeBtn.disabled) return;
+      likeBtn.disabled = true;
+      
+      try {
+        const response = await fetch(`${API_BASE}/like_media?name=${encodeURIComponent(name)}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to like media');
+        }
+
+        const data = await response.json();
+        
+        // Update the like count in the UI
+        const likeSpan = document.getElementById(`likes-${name}`);
+        if (likeSpan) {
+          likeSpan.textContent = data.likes || (parseInt(likeSpan.textContent) + 1);
+        }
+
+        // Update total likes in stats
+        const totalLikesEl = document.getElementById('totalLikes');
+        if (totalLikesEl) {
+          totalLikesEl.textContent = parseInt(totalLikesEl.textContent) + 1;
+        }
+
+        // Visual feedback
+        likeBtn.style.color = '#E74C3C';
+        setTimeout(() => {
+          likeBtn.disabled = false;
+        }, 1000);
+
+        console.log('✅ Media liked successfully');
+      } catch (error) {
+        console.error('Error liking media:', error);
+        alert('Failed to like media. Please try again.');
+        likeBtn.disabled = false;
+      }
+    }
+
+    function showDeleteModal(name, title) {
+      deleteMediaName = name;
+      document.getElementById('deleteTitle').textContent = title;
+      document.getElementById('deleteModal').classList.add('show');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('show');
+      deleteMediaName = '';
+    }
+
+    async function confirmDelete() {
+      if (!deleteMediaName) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/delete_media?name=${encodeURIComponent(deleteMediaName)}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
+
+        if (!response.ok) throw new Error('Delete failed');
+
+        closeDeleteModal();
+        loadMedia(); // Reload grid
+      } catch (error) {
+        console.error('Error deleting media:', error);
+        alert('Failed to delete media. Please try again.');
+      }
+    }
+
+    // Comments Modal Functions
+    async function openCommentsModal(mediaName) {
+      console.log('📱 Opening comments modal for:', mediaName);
+      
+      currentCommentsMediaName = mediaName;
+      const modal = document.getElementById('commentsModal');
+      
+      // Show modal
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+      
+      // Reset state
+      document.getElementById('commentsLoading').style.display = 'block';
+      document.getElementById('commentsList').style.display = 'none';
+      document.getElementById('commentsEmpty').style.display = 'none';
+      document.getElementById('newCommentText').value = '';
+
+      console.log('✅ Modal opened, loading comments...');
+      await loadComments(mediaName);
+    }
+
+    function closeCommentsModal() {
+      console.log('❌ Closing comments modal');
+      const modal = document.getElementById('commentsModal');
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.style.display = 'none';
+      }, 200);
+      currentCommentsMediaName = '';
+      currentComments = [];
+    }
+
+    // Click outside modal to close
+    document.getElementById('commentsModal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeCommentsModal();
+      }
+    });
+
+    async function loadComments(mediaName) {
+      try {
+        console.log('📥 Loading comments for:', mediaName);
+        const url = `${API_BASE}/get_comments?media_name=${encodeURIComponent(mediaName)}`;
+        console.log('📍 Fetching from:', url);
+        
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        });
+
+        console.log('📊 Response status:', response.status);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('❌ Response not OK:', errorText);
+          throw new Error(`Failed to load comments: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('✅ Loaded comments:', data);
+        
+        // Handle both array and object responses
+        currentComments = Array.isArray(data) ? data : (data.comments || []);
+        console.log('💬 Total comments:', currentComments.length);
+        
+        displayComments(currentComments);
+      } catch (error) {
+        console.error('💥 Error loading comments:', error);
+        document.getElementById('commentsLoading').innerHTML = `
+          <div style="color: #E74C3C; text-align: center; padding: 40px;">
+            <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+            <div style="font-size: 16px; margin-bottom: 8px;">Failed to load comments</div>
+            <div style="font-size: 12px; color: #999;">${error.message}</div>
+            <button onclick="loadComments('${mediaName}')" style="margin-top: 16px; padding: 8px 16px; background: #4A90E2; color: white; border: none; border-radius: 8px; cursor: pointer;">
+              Retry
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    function displayComments(comments) {
+      const loading = document.getElementById('commentsLoading');
+      const list = document.getElementById('commentsList');
+      const empty = document.getElementById('commentsEmpty');
+
+      loading.style.display = 'none';
+
+      console.log('Displaying', comments?.length || 0, 'comments');
+
+      if (!comments || comments.length === 0) {
+        empty.style.display = 'block';
+        list.style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      list.style.display = 'block';
+      list.innerHTML = '';
+
+      comments.forEach(comment => {
+        const commentDiv = document.createElement('div');
+        commentDiv.style.cssText = 'padding: 12px; background: #F9F9F9; border-radius: 8px; margin-bottom: 12px; border: 1px solid #E8E8E8;';
+        
+        // Format timestamp
+        let timestamp = '';
+        if (comment.timestamp) {
+          const date = new Date(comment.timestamp);
+          const now = new Date();
+          const diffMs = now - date;
+          const diffMins = Math.floor(diffMs / 60000);
+          
+          if (diffMins < 1) {
+            timestamp = 'Just now';
+          } else if (diffMins < 60) {
+            timestamp = `${diffMins}m ago`;
+          } else if (diffMins < 1440) {
+            timestamp = `${Math.floor(diffMins / 60)}h ago`;
+          } else {
+            timestamp = date.toLocaleDateString();
+          }
+        }
+        
+        commentDiv.innerHTML = `
+          <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #8B8B8B, #4A90E2); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: bold;">
+              ${comment.username?.[0]?.toUpperCase() || 'U'}
+            </div>
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <strong style="font-size: 14px; color: #1A1A1A;">@${comment.username || 'Anonymous'}</strong>
+                <span style="font-size: 12px; color: #999;">${timestamp}</span>
+              </div>
+            </div>
+          </div>
+          <p style="margin: 0 0 0 40px; font-size: 14px; line-height: 1.6; color: #333; word-wrap: break-word;">${escapeHtml(comment.comment || '')}</p>
+        `;
+        
+        list.appendChild(commentDiv);
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    async function postComment() {
+      const textarea = document.getElementById('newCommentText');
+      const comment = textarea.value.trim();
+      
+      if (!comment) return;
+
+      const btn = document.getElementById('postCommentBtn');
+      btn.disabled = true;
+      btn.textContent = 'Posting...';
+
+      try {
+        const response = await fetch(`${API_BASE}/add_comment`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            media_name: currentCommentsMediaName,
+            comment: comment
+          })
+        });
+
+        if (!response.ok) throw new Error('Failed to post comment');
+
+        const result = await response.json();
+        console.log('Comment posted successfully:', result);
+
+        textarea.value = '';
+        
+        // Reload comments to show the new one
+        await loadComments(currentCommentsMediaName);
+        
+        // Update comment count in the grid
+        const countSpan = document.getElementById(`comments-${currentCommentsMediaName}`);
+        if (countSpan) {
+          countSpan.textContent = parseInt(countSpan.textContent) + 1;
+        }
+
+        // Show success feedback
+        btn.style.background = '#2ECC71';
+        btn.textContent = '✓ Posted';
+        setTimeout(() => {
+          btn.style.background = '#4A90E2';
+          btn.textContent = 'Post';
+        }, 1500);
+
+      } catch (error) {
+        console.error('Error posting comment:', error);
+        alert('Failed to post comment. Please try again.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Post';
+      }
+    }
+
+
+    function handleLogout() {
+      localStorage.clear();
+      window.location.href = '/login.html';
+    }
+
+    // User menu toggle
+    document.getElementById('userMenuBtn').addEventListener('click', () => {
+      document.getElementById('dropdownMenu').classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.user-menu')) {
+        document.getElementById('dropdownMenu').classList.remove('show');
+      }
+    });
+
+    // Load on page load
+    loadMedia();
+  </script>
+</body>
+</html>

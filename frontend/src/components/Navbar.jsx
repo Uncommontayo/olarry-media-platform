@@ -1,57 +1,318 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { clearAuth, isAuthenticated } from "../api";
+import { theme } from "../styles/theme";
 
-export default function Navbar({ onCreate, onSearch, onHome }) {
-  const [hovered, setHovered] = useState(false);
+export default function Navbar({ onSearch, onHome, onFilterUser }) {
+  const [searchValue, setSearchValue] = useState("");
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const menuRef = useRef(null);
+  
+  const username = localStorage.getItem("username") || "User";
+  const userRole = localStorage.getItem("userRole");
+  const isAuth = isAuthenticated();
 
-  // current username persisted in localStorage
-  const [username, setUsername] = useState(() => localStorage.getItem("username") || "");
   useEffect(() => {
-    try { localStorage.setItem("username", username || ""); } catch (e) { console.debug('localStorage setItem failed', e); }
-  }, [username]);
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  function handleSearch(e) {
+    const value = e.target.value;
+    setSearchValue(value);
+    onSearch(value);
+  }
+
+  function handleLogout() {
+    clearAuth();
+    window.location.href = "/login.html";
+  }
 
   return (
-    <header className="nav" role="banner">
-      <div className="nav-left">
+    <header style={{
+      position: 'sticky',
+      top: 0,
+      zIndex: 100,
+      background: theme.colors.backgroundDark,
+      borderBottom: `1px solid ${theme.colors.border}`,
+      boxShadow: theme.shadow.soft
+    }}>
+      <nav style={{
+        maxWidth: 1400,
+        margin: '0 auto',
+        padding: '12px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 24
+      }}>
+        {/* Logo */}
         <button
-          className="brand"
           onClick={onHome}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
-          aria-label="Go home"
-        >
-          <span className="brand-mark" aria-hidden />
-          <span className="brand-text">O’larry</span>
-          <span className={`brand-pulse ${hovered ? "brand-pulse--active" : ""}`} aria-hidden />
-        </button>
-      </div>
-
-      <div className="nav-search">
-        <input
-          className="field"
-          placeholder="Search the drop..."
-          onChange={(e) => onSearch(e.target.value)}
-          aria-label="Search captions or users"
-        />
-      </div>
-
-      <div className="nav-actions">
-        <button
-          className="pill"
-          onClick={() => {
-            const val = prompt("Set your username (no @):", username || "");
-            if (val !== null) setUsername(val.trim());
+          style={{
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: 8,
+            borderRadius: theme.radius.sm,
+            transition: theme.transition.fast
           }}
-          aria-label="Set username"
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = theme.colors.card;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'none';
+          }}
         >
-          {username ? `@${username}` : "Set name"}
+          <div style={{
+            width: 36,
+            height: 36,
+            borderRadius: '50%',
+            background: `linear-gradient(135deg, ${theme.colors.bape}, ${theme.colors.accentBright})`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#fff',
+            fontSize: 18,
+            fontWeight: 'bold'
+          }}>
+            O
+          </div>
+          <span style={{
+            fontSize: 20,
+            fontWeight: 700,
+            color: theme.colors.text,
+            letterSpacing: '-0.5px'
+          }}>
+            O'larry
+          </span>
         </button>
 
-        <button className="icon-button" onClick={onCreate} aria-label="Create post">
-          <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-            <path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.402 8.168L12 18.896l-7.336 3.869 1.402-8.168L.132 9.21l8.2-1.192z" fill="currentColor" />
-          </svg>
-        </button>
-      </div>
+        {/* Creator Dashboard Link */}
+        {userRole === 'creator' && (
+          <a
+            href="/creator-dashboard.html"
+            style={{
+              padding: '8px 16px',
+              background: `linear-gradient(135deg, ${theme.colors.accentBright}, #357ABD)`,
+              color: '#fff',
+              textDecoration: 'none',
+              borderRadius: theme.radius.md,
+              fontSize: 14,
+              fontWeight: 600,
+              boxShadow: theme.shadow.soft,
+              transition: theme.transition.fast,
+              whiteSpace: 'nowrap'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = theme.shadow.medium;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = theme.shadow.soft;
+            }}
+          >
+            Creator Dashboard
+          </a>
+        )}
+
+        {/* Search */}
+        <div style={{
+          flex: 1,
+          maxWidth: 600
+        }}>
+          <input
+            type="text"
+            value={searchValue}
+            onChange={handleSearch}
+            placeholder="Search titles, captions, locations, people..."
+            style={{
+              width: '100%',
+              padding: '10px 16px',
+              borderRadius: theme.radius.md,
+              border: `1px solid ${theme.colors.border}`,
+              fontSize: 14,
+              background: theme.colors.card,
+              color: theme.colors.text,
+              outline: 'none',
+              transition: theme.transition.fast
+            }}
+            onFocus={(e) => {
+              e.target.style.borderColor = theme.colors.accentBright;
+              e.target.style.boxShadow = theme.shadow.focus;
+            }}
+            onBlur={(e) => {
+              e.target.style.borderColor = theme.colors.border;
+              e.target.style.boxShadow = 'none';
+            }}
+          />
+        </div>
+
+        {/* User Menu */}
+        {isAuth ? (
+          <div style={{ position: 'relative' }} ref={menuRef}>
+            <button
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '8px 16px',
+                background: theme.colors.card,
+                border: `1px solid ${theme.colors.border}`,
+                borderRadius: theme.radius.md,
+                cursor: 'pointer',
+                fontSize: 14,
+                fontWeight: 500,
+                color: theme.colors.text,
+                transition: theme.transition.fast
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = theme.colors.accentBright;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = theme.colors.border;
+              }}
+            >
+              <div style={{
+                width: 32,
+                height: 32,
+                borderRadius: '50%',
+                background: theme.colors.bape,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                fontSize: 14,
+                fontWeight: 'bold'
+              }}>
+                {username[0]?.toUpperCase() || 'U'}
+              </div>
+              <span>@{username}</span>
+              <span style={{ fontSize: 12 }}>▼</span>
+            </button>
+
+            {showUserMenu && (
+              <div style={{
+                position: 'absolute',
+                top: 'calc(100% + 8px)',
+                right: 0,
+                width: 200,
+                background: theme.colors.card,
+                border: `1px solid ${theme.colors.border}`,
+                borderRadius: theme.radius.md,
+                boxShadow: theme.shadow.hover,
+                overflow: 'hidden'
+              }}>
+                <button
+                  onClick={() => {
+                    window.location.href = '/profile.html';
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: 'none',
+                    border: 'none',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    color: theme.colors.text,
+                    borderBottom: `1px solid ${theme.colors.borderLight}`,
+                    transition: theme.transition.fast
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = theme.colors.background;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'none';
+                  }}
+                >
+                  View Profile
+                </button>
+                <button
+                  onClick={() => {
+                    onFilterUser?.(username);
+                    setShowUserMenu(false);
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: 'none',
+                    border: 'none',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    color: theme.colors.text,
+                    borderBottom: `1px solid ${theme.colors.borderLight}`,
+                    transition: theme.transition.fast
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = theme.colors.background;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'none';
+                  }}
+                >
+                  View My Posts
+                </button>
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: 'none',
+                    border: 'none',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    color: theme.colors.error,
+                    transition: theme.transition.fast
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = theme.colors.background;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'none';
+                  }}
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <a
+            href="/login.html"
+            style={{
+              padding: '8px 20px',
+              background: theme.colors.accentBright,
+              color: '#fff',
+              borderRadius: theme.radius.md,
+              textDecoration: 'none',
+              fontSize: 14,
+              fontWeight: 600,
+              transition: theme.transition.fast
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = theme.shadow.medium;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            Login
+          </a>
+        )}
+      </nav>
     </header>
   );
 }

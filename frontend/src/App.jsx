@@ -1,25 +1,31 @@
 import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Feed from "./pages/Feed";
-import Upload from "./pages/Upload";
+import { theme } from "./styles/theme";
 
 export default function App() {
-  const [page, setPage] = useState("feed");
   const [search, setSearch] = useState("");
+  const [filterUsername, setFilterUsername] = useState(null);
+
+  function handleHome() {
+    setSearch("");
+    setFilterUsername(null);
+  }
 
   return (
-    <div className="app-shell">
-      <div className="app-ambient" aria-hidden />
-
+    <div style={{
+      minHeight: '100vh',
+      background: theme.colors.background,
+      color: theme.colors.text,
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    }}>
       <Navbar
-        onCreate={() => setPage("upload")}
         onSearch={setSearch}
-        onHome={() => setPage("feed")}
+        onHome={handleHome}
+        onFilterUser={setFilterUsername}
       />
-
-      <main className="app-main">
-        {page === "feed" && <Feed search={search} />}
-        {page === "upload" && <Upload onDone={() => setPage("feed")} />}
+      <main>
+        <Feed search={search} filterUsername={filterUsername} />
       </main>
     </div>
   );

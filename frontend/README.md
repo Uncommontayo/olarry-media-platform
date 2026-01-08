@@ -1,53 +1,185 @@
-# O'larry — Minimal Photo-Sharing Demo (React + Vite)
+# O'larry Media Platform — Modern Media Sharing Platform
 
-O'larry is a compact photo-sharing application built to demonstrate common media workflows using a modern frontend and a small serverless backend. The project purpose is educational: to show how to handle image uploads, simple user flow, and profile avatars with pragmatic, minimal infrastructure.
+O'larry is a comprehensive media-sharing platform with dual interfaces: a **Consumer Interface** for browsing and interacting with content, and a **Creator Dashboard** for uploading and managing media. Built with React (consumer) and vanilla HTML/CSS/JS (creator), featuring JWT authentication, role-based access, and modern design.
 
-Table of contents
-- Features
-- Quick start (frontend)
-- Backend (Azure Functions)
-- Profile pictures & usernames
-- Development notes
-- Contributing
+## 🎯 Overview
 
----
+**Two Distinct Interfaces:**
+- **Consumer Interface** - Instagram-like feed for viewing, liking, and commenting on media
+- **Creator Dashboard** - Professional upload and management interface for content creators
 
-## Features
-- Image uploads with captions and a username field.
-- Persistent client-side username (stored in `localStorage`).
-- Per-user profile pictures with client-side preview and optional square-cropping.
-- Avatars are displayed in the feed; profile-image posts are hidden from the main gallery.
-- Automatic cleanup of prior profile images when a new avatar is uploaded.
+**Key Features:**
+- Role-based authentication (Consumer/Creator)
+- Media upload with metadata (title, caption, location, tagged people)
+- Real-time search and filtering
+- Threaded comments system
+- Like functionality with count tracking
+- Responsive Bape grey matte futuristic design
+- Video support with HTML5 player
 
 ---
 
-## Quick start (frontend)
-Prerequisites: Node.js (16+), npm
+## 📚 Documentation
 
-1. From the repo root, enter the frontend workspace
+### Consumer Interface
+See [CONSUMER_INTERFACE.md](CONSUMER_INTERFACE.md) for complete documentation on:
+- Feed and media browsing
+- Search functionality
+- Media detail modal with comments
+- Authentication setup
+- API integration
 
-   cd frontend
-
-2. Install dependencies
-
-   npm install
-
-3. Start dev server
-
-   npm run dev
-
-4. Open the app in your browser (default: http://localhost:5174)
-
-Notes: Set your username in the Navbar (top-right). Visit `/<your-username>` to upload a profile image and test the avatar flow.
+### Creator Dashboard
+See [CREATOR_DASHBOARD.md](CREATOR_DASHBOARD.md) for complete documentation on:
+- Upload interface with drag-drop
+- Media management dashboard
+- Performance analytics
+- File format support
+- Upload process
 
 ---
 
-## Backend (Azure Functions API)
-A companion Azure Functions API powers uploads and listing. The backend code is not included in this repository; the dev proxy in `vite.config.js` points to the hosted API.
+## 🚀 Quick Start
 
-Briefly, the backend:
-- Stores images in an Azure Blob container (`images`).
-- Exposes endpoints for upload, list, like, delete, and AI captioning.
+### Prerequisites
+- Node.js 16+
+- Backend API running on `http://localhost:7071/api/`
+
+### Installation
+
+```bash
+cd frontend
+npm install
+```
+
+### Development
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`
+
+### Build for Production
+
+```bash
+npm run build
+npm run preview
+```
+
+---
+
+## 🔐 Authentication
+
+### Registration
+1. Visit `/register.html`
+2. Choose role: **Consumer** or **Creator**
+3. Enter username and password (min 6 characters)
+4. Submit to create account
+
+### Login
+1. Visit `/login.html`
+2. Enter credentials
+3. Automatically redirected based on role:
+   - **Creator** → `/creator-dashboard.html`
+   - **Consumer** → `/` (main feed)
+
+### Roles
+
+**Consumer**:
+- View media feed
+- Search and filter content
+- Like posts
+- Add threaded comments
+- View media details
+
+**Creator**:
+- All consumer capabilities
+- Upload media (images/videos)
+- Add metadata (title, caption, location, tags)
+- Track performance (likes, comments)
+- Manage uploads (view, delete)
+- Analytics dashboard
+
+---
+
+## 📁 Project Structure
+
+```
+frontend/
+├── src/                       # React consumer interface
+│   ├── api.js                # API service with auth
+│   ├── App.jsx               # Main app component
+│   ├── main.jsx              # Entry point
+│   ├── components/
+│   │   ├── AuthGuard.jsx     # Auth wrapper
+│   │   ├── MediaDetail.jsx   # Media detail modal
+│   │   ├── Navbar.jsx        # Navigation
+│   │   └── PostCard.jsx      # Media card
+│   ├── pages/
+│   │   └── Feed.jsx          # Main feed page
+│   └── styles/
+│       └── theme.js          # Design tokens
+├── login.html                # Login page
+├── register.html             # Registration page
+├── creator-dashboard.html    # Creator dashboard
+├── upload-media.html         # Upload interface
+├── index.html                # Consumer entry
+├── CONSUMER_INTERFACE.md     # Consumer docs
+├── CREATOR_DASHBOARD.md      # Creator docs
+└── README.md                 # This file
+```
+
+---
+
+## 🎨 Design Theme
+
+**Bape Grey Matte Futuristic Aesthetic**
+
+### Colors
+- Primary Grey: `#8B8B8B`
+- Light Grey: `#B8B8B8`
+- Dark Grey: `#5A5A5A`
+- Background: `#E8E8E8`
+- Accent Blue: `#4A90E2`
+- Card: `#F5F5F5`
+
+### Features
+- Smooth transitions and hover effects
+- Modern card-based layouts
+- Responsive grid systems
+- Clean typography
+- Professional spacing
+
+---
+
+## 📡 API Endpoints
+
+### Authentication
+- `POST /api/login` - User login
+- `POST /api/register` - User registration
+
+### Media
+- `GET /api/list_media` - List all media
+- `GET /api/search_media?q=query` - Search media
+- `GET /api/get_media?name=filename` - Get single media
+- `POST /api/upload_media?caption=X&username=Y&location=Z&tagged_people=A,B` - Upload media
+- `POST /api/like_media?name=filename` - Like media
+- `DELETE /api/delete_media?name=filename` - Delete media
+
+### Comments
+- `GET /api/get_comments?media_name=filename` - Get comments
+- `POST /api/add_comment` - Add comment
+  - Body: `{ media_name, comment, parent_id }`
+
+**All authenticated endpoints require:**
+```javascript
+headers: {
+  'Authorization': 'Bearer {token}'
+}
+```
+
+---
 - Returns short-lived SAS URLs for images (used directly in `<img>` tags).
 
 If you bring your own backend, ensure the API surface matches the endpoints below and update `API_PROXY_TARGET` in `vite.config.js` as needed.

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - O'larry</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #0A0E27;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 20% 30%, rgba(74, 144, 226, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(139, 139, 139, 0.1) 0%, transparent 50%);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .container {
+      background: rgba(20, 25, 45, 0.9);
+      backdrop-filter: blur(20px);
+      padding: 48px;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5),
+                  0 0 0 1px rgba(74, 144, 226, 0.2),
+                  inset 0 0 80px rgba(74, 144, 226, 0.03);
+      width: 100%;
+      max-width: 420px;
+      position: relative;
+      z-index: 1;
+      border: 1px solid rgba(74, 144, 226, 0.15);
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4A90E2, #8B8B8B);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      box-shadow: 0 0 40px rgba(74, 144, 226, 0.4),
+                  0 0 80px rgba(74, 144, 226, 0.2);
+      animation: glow 3s ease-in-out infinite;
+      position: relative;
+    }
+
+    .logo-circle::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4A90E2, #8B8B8B);
+      z-index: -1;
+      opacity: 0.5;
+      filter: blur(10px);
+    }
+
+    @keyframes glow {
+      0%, 100% {
+        box-shadow: 0 0 40px rgba(74, 144, 226, 0.4),
+                    0 0 80px rgba(74, 144, 226, 0.2);
+      }
+      50% {
+        box-shadow: 0 0 60px rgba(74, 144, 226, 0.6),
+                    0 0 100px rgba(74, 144, 226, 0.3);
+      }
+    }
+
+    h1 {
+      font-size: 32px;
+      background: linear-gradient(135deg, #E8E8E8, #4A90E2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: #B8B8B8;
+      text-align: center;
+      margin-bottom: 32px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #E8E8E8;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid rgba(74, 144, 226, 0.3);
+      border-radius: 12px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #E8E8E8;
+      transition: all 0.3s;
+      font-family: inherit;
+    }
+
+    input::placeholder {
+      color: #6B6B6B;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #4A90E2;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2),
+                  0 0 20px rgba(74, 144, 226, 0.1);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #4A90E2, #357ABD);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 8px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(74, 144, 226, 0.3);
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(74, 144, 226, 0.5),
+                  0 0 40px rgba(74, 144, 226, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      background: #B8B8B8;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .error {
+      background: #FFE5E5;
+      color: #E74C3C;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .error.show {
+      display: block;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      color: #8B8B8B;
+      font-size: 14px;
+    }
+
+    .footer a {
+      color: #4A90E2;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .footer a:hover {
+      color: #5BA0F2;
+      text-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+    }
+
+    .role-selector {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .role-option {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #D0D0D0;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fff;
+    }
+
+    .role-option:hover {
+      border-color: #4A90E2;
+    }
+
+    .role-option.active {
+      border-color: #4A90E2;
+      background: #E8F4FF;
+    }
+
+    .role-option input {
+      display: none;
+    }
+
+    .role-label {
+      font-weight: 600;
+      color: #1A1A1A;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-circle">O</div>
+      <h1>Welcome Back</h1>
+      <p class="subtitle">Login to O'larry</p>
+    </div>
+
+    <div id="error" class="error"></div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required autocomplete="username">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password">
+      </div>
+
+      <button type="submit" class="btn" id="loginBtn">Login</button>
+    </form>
+
+    <div class="footer">
+      Don't have an account? <a href="/register.html">Register here</a>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:7071/api';
+    const form = document.getElementById('loginForm');
+    const errorDiv = document.getElementById('error');
+    const loginBtn = document.getElementById('loginBtn');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      if (!username || !password) {
+        showError('Please fill in all fields');
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Logging in...';
+      errorDiv.classList.remove('show');
+
+      try {
+        const response = await fetch(`${API_BASE}/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+
+        // Check if response has content
+        const contentType = response.headers.get('content-type');
+        let data;
+        
+        if (contentType && contentType.includes('application/json')) {
+          const text = await response.text();
+          data = text ? JSON.parse(text) : {};
+        } else {
+          // If not JSON, treat as error
+          throw new Error(`Server error: ${response.status} ${response.statusText}`);
+        }
+
+        if (!response.ok) {
+          throw new Error(data.message || data.error || 'Login failed');
+        }
+
+        if (data.token) {
+          // Store token
+          localStorage.setItem('authToken', data.token);
+          
+          // Verify token and get current role from database
+          const verifyResponse = await fetch(`${API_BASE}/verify_token`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${data.token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+
+          if (!verifyResponse.ok) {
+            throw new Error('Token verification failed');
+          }
+
+          const verifyData = await verifyResponse.json();
+          
+          if (verifyData.valid) {
+            // Store the role from database (source of truth)
+            localStorage.setItem('userRole', verifyData.role);
+            localStorage.setItem('username', verifyData.username);
+            
+            // Clear pending registration data
+            sessionStorage.removeItem('pendingRole');
+            sessionStorage.removeItem('registeredUsername');
+
+            console.log('✅ Login successful. Username:', verifyData.username, 'Role:', verifyData.role);
+
+            // Redirect based on current role from database
+            if (verifyData.role === 'creator') {
+              window.location.href = '/creator-dashboard.html';
+            } else {
+              window.location.href = '/';
+            }
+          } else {
+            throw new Error('Token verification failed');
+          }
+        } else {
+          throw new Error('No token received');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showError(error.message || 'Login failed. Please check your credentials and try again.');
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Login';
+      }
+    });
+
+    function showError(message) {
+      errorDiv.textContent = message;
+      errorDiv.classList.add('show');
+    }
+
+    // Check if already logged in
+    if (localStorage.getItem('authToken')) {
+      window.location.href = '/';
+    }
+  </script>
+</body>
+</html>

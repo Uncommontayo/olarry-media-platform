@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Media - O'larry Creator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #E8E8E8;
+      color: #1A1A1A;
+      min-height: 100vh;
+    }
+
+    /* Navigation */
+    .navbar {
+      background: #2A2A2A;
+      border-bottom: 1px solid #D0D0D0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: #F5F5F5;
+    }
+
+    .logo-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8B8B8B, #4A90E2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .logo-text {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .btn-back {
+      color: #B8B8B8;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .btn-back:hover {
+      background: rgba(255,255,255,0.1);
+      color: #F5F5F5;
+    }
+
+    /* Main Content */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1A1A1A;
+      margin-bottom: 12px;
+    }
+
+    .header p {
+      color: #6B6B6B;
+      font-size: 16px;
+    }
+
+    /* Upload Area */
+    .upload-section {
+      background: #F5F5F5;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      margin-bottom: 32px;
+    }
+
+    .drop-zone {
+      border: 3px dashed #D0D0D0;
+      border-radius: 12px;
+      padding: 60px 40px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: #fff;
+      position: relative;
+    }
+
+    .drop-zone:hover,
+    .drop-zone.drag-over {
+      border-color: #4A90E2;
+      background: #E8F4FF;
+    }
+
+    .drop-zone-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      color: #8B8B8B;
+    }
+
+    .drop-zone h3 {
+      font-size: 20px;
+      color: #1A1A1A;
+      margin-bottom: 8px;
+    }
+
+    .drop-zone p {
+      color: #6B6B6B;
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .btn-browse {
+      padding: 12px 28px;
+      background: #4A90E2;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+
+    .btn-browse:hover {
+      background: #3A7BC8;
+    }
+
+    .file-info {
+      margin-top: 16px;
+      padding: 12px;
+      background: #E8F4FF;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1A1A1A;
+    }
+
+    /* Preview */
+    .preview-section {
+      margin-top: 24px;
+      display: none;
+    }
+
+    .preview-section.show {
+      display: block;
+    }
+
+    .preview-container {
+      max-width: 500px;
+      margin: 0 auto 24px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    .preview-image,
+    .preview-video {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    /* Form */
+    .form-section {
+      background: #F5F5F5;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      display: none;
+    }
+
+    .form-section.show {
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #1A1A1A;
+      font-size: 15px;
+    }
+
+    .form-label .required {
+      color: #E74C3C;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #D0D0D0;
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      background: #fff;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #4A90E2;
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .form-hint {
+      font-size: 13px;
+      color: #6B6B6B;
+      margin-top: 6px;
+    }
+
+    /* Progress */
+    .progress-section {
+      margin-top: 24px;
+      display: none;
+    }
+
+    .progress-section.show {
+      display: block;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #D0D0D0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4A90E2, #6cf2d6);
+      transition: width 0.3s;
+      width: 0%;
+    }
+
+    .progress-text {
+      text-align: center;
+      color: #6B6B6B;
+      font-size: 14px;
+    }
+
+    /* Actions */
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #4A90E2;
+      color: #fff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #3A7BC8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    }
+
+    .btn-primary:disabled {
+      background: #B8B8B8;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #D0D0D0;
+      color: #1A1A1A;
+    }
+
+    .btn-secondary:hover {
+      background: #B8B8B8;
+    }
+
+    /* Success Message */
+    .success-section {
+      background: #E5F9E5;
+      border: 2px solid #27AE60;
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      display: none;
+    }
+
+    .success-section.show {
+      display: block;
+    }
+
+    .success-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+
+    .success-section h2 {
+      font-size: 28px;
+      color: #27AE60;
+      margin-bottom: 12px;
+    }
+
+    .success-section p {
+      color: #1A1A1A;
+      margin-bottom: 24px;
+      font-size: 16px;
+    }
+
+    /* Error Message */
+    .error-message {
+      background: #FFE5E5;
+      border: 1px solid #E74C3C;
+      color: #E74C3C;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 24px 16px;
+      }
+
+      .upload-section,
+      .form-section {
+        padding: 20px;
+      }
+
+      .drop-zone {
+        padding: 40px 20px;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="/creator-dashboard.html" class="logo">
+        <div class="logo-circle">O</div>
+        <span class="logo-text">O'larry Creator</span>
+      </a>
+      <a href="/creator-dashboard.html" class="btn-back">← Back to Dashboard</a>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="header">
+      <h1>Upload New Media</h1>
+      <p>Share your creative work with the O'larry community</p>
+    </div>
+
+    <div class="error-message" id="errorMessage"></div>
+
+    <!-- Upload Section -->
+    <div class="upload-section" id="uploadSection">
+      <div class="drop-zone" id="dropZone">
+        <div class="drop-zone-icon">📁</div>
+        <h3>Drop your media here</h3>
+        <p>or click to browse your files</p>
+        <button class="btn-browse" onclick="document.getElementById('fileInput').click()">
+          Browse Files
+        </button>
+        <input type="file" id="fileInput" class="file-input" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,video/mp4,video/mov,video/webm,video/avi,video/mpeg">
+        <div class="file-info" id="fileInfo" style="display: none;"></div>
+      </div>
+
+      <div class="preview-section" id="previewSection">
+        <div class="preview-container" id="previewContainer"></div>
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-section" id="formSection">
+      <form id="uploadForm">
+        <div class="form-group">
+          <label class="form-label">
+            Title <span class="required">*</span>
+          </label>
+          <input type="text" id="title" class="form-input" required placeholder="Give your media a title">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Caption</label>
+          <textarea id="caption" class="form-textarea" placeholder="Tell us more about your media (optional)"></textarea>
+          <div class="form-hint">Describe what makes this special</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input type="text" id="location" class="form-input" placeholder="Where was this taken?">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tag People</label>
+          <input type="text" id="taggedPeople" class="form-input" placeholder="username1, username2, username3">
+          <div class="form-hint">Comma-separated usernames</div>
+        </div>
+
+        <div class="progress-section" id="progressSection">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-text" id="progressText">Uploading... 0%</div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="cancelUpload()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submitBtn">Upload Media</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Success Section -->
+    <div class="success-section" id="successSection">
+      <div class="success-icon">✓</div>
+      <h2>Upload Successful!</h2>
+      <p>Your media has been uploaded and is now live on O'larry</p>
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="window.location.href='/creator-dashboard.html'">
+          View Dashboard
+        </button>
+        <button class="btn btn-primary" onclick="uploadAnother()">
+          Upload Another
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:7071/api';
+    const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+    const ALLOWED_TYPES = {
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/gif': ['.gif'],
+      'image/webp': ['.webp'],
+      'video/mp4': ['.mp4'],
+      'video/quicktime': ['.mov'],
+      'video/webm': ['.webm'],
+      'video/x-msvideo': ['.avi'],
+      'video/mpeg': ['.mpeg']
+    };
+
+    let selectedFile = null;
+    let uploadXHR = null;
+
+    // Check authentication and verify role with backend
+    async function checkAuth() {
+      const token = localStorage.getItem('authToken');
+
+      if (!token) {
+        window.location.href = '/login.html';
+        return false;
+      }
+
+      try {
+        // Verify token with backend and get current role
+        const response = await fetch(`${API_BASE}/verify_token`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          // Token invalid, logout
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('username');
+          window.location.href = '/login.html';
+          return false;
+        }
+
+        const data = await response.json();
+        
+        if (!data.valid) {
+          // Token invalid, logout
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('username');
+          window.location.href = '/login.html';
+          return false;
+        }
+
+        // Update localStorage with current role from database
+        localStorage.setItem('userRole', data.role);
+        localStorage.setItem('username', data.username);
+        
+        console.log('✅ Auth verified. Role:', data.role);
+
+        // Check if user is creator
+        if (data.role !== 'creator') {
+          alert('This area is for creators only. Your account is a consumer account.');
+          window.location.href = '/';
+          return false;
+        }
+
+        return true;
+      } catch (error) {
+        console.error('Auth check error:', error);
+        window.location.href = '/login.html';
+        return false;
+      }
+    }
+
+    // Initialize
+    checkAuth();
+
+    // File input change
+    document.getElementById('fileInput').addEventListener('change', (e) => {
+      handleFileSelect(e.target.files[0]);
+    });
+
+    // Drag and drop
+    const dropZone = document.getElementById('dropZone');
+
+    dropZone.addEventListener('click', () => {
+      document.getElementById('fileInput').click();
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('drag-over');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      handleFileSelect(e.dataTransfer.files[0]);
+    });
+
+    function handleFileSelect(file) {
+      if (!file) return;
+
+      // Validate file type
+      if (!ALLOWED_TYPES[file.type]) {
+        showError('Invalid file type. Please select an image (JPEG, PNG, GIF, WebP) or video (MP4, MOV, WebM, AVI, MPEG).');
+        return;
+      }
+
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        showError(`File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB.`);
+        return;
+      }
+
+      selectedFile = file;
+      displayFileInfo(file);
+      showPreview(file);
+      showForm();
+    }
+
+    function displayFileInfo(file) {
+      const fileInfo = document.getElementById('fileInfo');
+      const sizeMB = (file.size / 1024 / 1024).toFixed(2);
+      fileInfo.textContent = `Selected: ${file.name} (${sizeMB}MB)`;
+      fileInfo.style.display = 'block';
+    }
+
+    function showPreview(file) {
+      const previewSection = document.getElementById('previewSection');
+      const previewContainer = document.getElementById('previewContainer');
+      
+      previewContainer.innerHTML = '';
+      
+      if (file.type.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.className = 'preview-image';
+        img.src = URL.createObjectURL(file);
+        previewContainer.appendChild(img);
+      } else if (file.type.startsWith('video/')) {
+        const video = document.createElement('video');
+        video.className = 'preview-video';
+        video.controls = true;
+        video.src = URL.createObjectURL(file);
+        previewContainer.appendChild(video);
+      }
+      
+      previewSection.classList.add('show');
+    }
+
+    function showForm() {
+      document.getElementById('formSection').classList.add('show');
+    }
+
+    // Form submission
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (!selectedFile) {
+        showError('Please select a file');
+        return;
+      }
+
+      const title = document.getElementById('title').value.trim();
+      const caption = document.getElementById('caption').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const taggedPeople = document.getElementById('taggedPeople').value.trim();
+
+      if (!title) {
+        showError('Title is required');
+        return;
+      }
+
+      await uploadFile(selectedFile, title, caption, location, taggedPeople);
+    });
+
+    async function uploadFile(file, title, caption, location, taggedPeople) {
+      const submitBtn = document.getElementById('submitBtn');
+      const progressSection = document.getElementById('progressSection');
+      const progressFill = document.getElementById('progressFill');
+      const progressText = document.getElementById('progressText');
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Uploading...';
+      progressSection.classList.add('show');
+
+      // Build query parameters for metadata
+      const params = new URLSearchParams({
+        title: title,
+        caption: caption || title,
+        username: localStorage.getItem('username') || 'creator',
+        location: location || '',
+        tagged_people: taggedPeople || ''
+      });
+
+      // Build FormData with just the file
+      const formData = new FormData();
+      formData.append('file', file);
+
+      // Log what we're sending
+      console.log('📤 Uploading file with metadata in query params:');
+      console.log('  - file:', file.name, `(${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+      console.log('  - title:', title);
+      console.log('  - caption:', caption || title);
+      console.log('  - username:', localStorage.getItem('username') || 'creator');
+      console.log('  - location:', location || '');
+      console.log('  - tagged_people:', taggedPeople || '');
+
+      return new Promise((resolve, reject) => {
+        uploadXHR = new XMLHttpRequest();
+        uploadXHR.open('POST', `${API_BASE}/upload_media?${params.toString()}`);
+        
+        // Set auth header
+        uploadXHR.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('authToken')}`);
+
+        // Progress
+        uploadXHR.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            progressFill.style.width = `${percent}%`;
+            progressText.textContent = `Uploading... ${percent}%`;
+          }
+        };
+
+        // Success
+        uploadXHR.onload = () => {
+          console.log('Upload response status:', uploadXHR.status);
+          console.log('Upload response body:', uploadXHR.responseText);
+          
+          if (uploadXHR.status >= 200 && uploadXHR.status < 300) {
+            showSuccess();
+            resolve();
+          } else {
+            let errorMsg = 'Upload failed. Please try again.';
+            try {
+              const response = JSON.parse(uploadXHR.responseText);
+              errorMsg = response.error || response.message || errorMsg;
+              console.error('Backend error response:', response);
+            } catch (e) {
+              errorMsg = `Upload failed: ${uploadXHR.status} ${uploadXHR.statusText}`;
+              console.error('Could not parse error response');
+            }
+            console.error('Upload error:', uploadXHR.status, uploadXHR.responseText);
+            showError(errorMsg);
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Upload Media';
+            reject();
+          }
+        };
+
+        // Error
+        uploadXHR.onerror = () => {
+          console.error('Network error during upload');
+          showError('Network error. Please check your connection and ensure the backend is running.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Upload Media';
+          reject();
+        };
+
+        // Send FormData
+        uploadXHR.send(formData);
+      });
+    }
+
+    function showSuccess() {
+      document.getElementById('uploadSection').style.display = 'none';
+      document.getElementById('formSection').style.display = 'none';
+      document.getElementById('successSection').classList.add('show');
+    }
+
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.classList.add('show');
+      setTimeout(() => errorDiv.classList.remove('show'), 5000);
+    }
+
+    function cancelUpload() {
+      if (uploadXHR) {
+        uploadXHR.abort();
+      }
+      window.location.href = '/creator-dashboard.html';
+    }
+
+    function uploadAnother() {
+      window.location.reload();
+    }
+  </script>
+</body>
+</html>

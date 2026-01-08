@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O'larry Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e1e8ed;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #e1e8ed;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d7de;
+        }
+
+        .message {
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .credentials {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .credentials p {
+            margin: 5px 0;
+        }
+
+        .credentials strong {
+            color: #667eea;
+        }
+
+        #loginSection {
+            display: block;
+        }
+
+        #adminPanel {
+            display: none;
+        }
+
+        .user-list {
+            margin-top: 20px;
+        }
+
+        .user-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .user-item p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .user-item .username {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .user-item .role {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Admin Login Section -->
+        <div id="loginSection">
+            <div class="header">
+                <h1>🛡️ Admin Panel</h1>
+                <p>O'larry Platform Administration</p>
+            </div>
+            <div class="content">
+                <div class="message message-info show">
+                    <strong>Default Credentials:</strong> admin / changeme123
+                </div>
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label for="adminUsername">Admin Username</label>
+                        <input type="text" id="adminUsername" value="admin" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="adminPassword">Admin Password</label>
+                        <input type="password" id="adminPassword" value="changeme123" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login as Admin</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Admin Panel Section -->
+        <div id="adminPanel">
+            <div class="header">
+                <h1>🛡️ Admin Panel</h1>
+                <p>Manage Creator Accounts</p>
+            </div>
+            <div class="content">
+                <!-- Messages -->
+                <div id="successMessage" class="message message-success"></div>
+                <div id="errorMessage" class="message message-error"></div>
+
+                <!-- Create Creator Form -->
+                <div class="form-section">
+                    <h2 class="section-title">Create New Creator Account</h2>
+                    <form id="createCreatorForm">
+                        <div class="form-group">
+                            <label for="creatorUsername">Username *</label>
+                            <input type="text" id="creatorUsername" placeholder="Enter username" required>
+                            <div class="hint">Unique identifier for the creator</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="creatorEmail">Email *</label>
+                            <input type="email" id="creatorEmail" placeholder="creator@example.com" required>
+                            <div class="hint">Valid email address</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="creatorPassword">Password *</label>
+                            <input type="password" id="creatorPassword" placeholder="Enter secure password" required>
+                            <div class="hint">Minimum 6 characters recommended</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Creator Account</button>
+                    </form>
+                </div>
+
+                <!-- User List Section -->
+                <div class="form-section">
+                    <h2 class="section-title">Update User Role</h2>
+                    <form id="updateRoleForm">
+                        <div class="form-group">
+                            <label for="updateUsername">Username *</label>
+                            <input type="text" id="updateUsername" placeholder="Enter username" required>
+                            <div class="hint">Username of the user to update</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="updateRole">New Role *</label>
+                            <select id="updateRole" required style="width: 100%; padding: 12px 16px; border: 2px solid #e1e8ed; border-radius: 8px; font-size: 14px;">
+                                <option value="consumer">Consumer</option>
+                                <option value="creator">Creator</option>
+                            </select>
+                            <div class="hint">Select the new role for this user</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update User Role</button>
+                    </form>
+                </div>
+
+                <!-- User List Section -->
+                <div class="form-section">
+                    <h2 class="section-title">All Users</h2>
+                    <button id="loadUsersBtn" class="btn btn-secondary">Load User List</button>
+                    <div id="userListContainer"></div>
+                </div>
+
+                <!-- Logout -->
+                <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
+            ? '/api'
+            : (import.meta && import.meta.env && import.meta.env.VITE_API_BASE) || '/api';
+
+        let adminCredentials = null;
+
+        // Admin Login
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('adminUsername').value.trim();
+            const password = document.getElementById('adminPassword').value;
+
+            if (!username || !password) {
+                alert('Please enter both username and password');
+                return;
+            }
+
+            // Store credentials for future requests
+            adminCredentials = `${username}:${password}`;
+            localStorage.setItem('adminAuth', adminCredentials);
+
+            // Switch to admin panel
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+        });
+
+        // Create Creator Account
+        document.getElementById('createCreatorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            hideMessages();
+
+            const username = document.getElementById('creatorUsername').value.trim();
+            const email = document.getElementById('creatorEmail').value.trim();
+            const password = document.getElementById('creatorPassword').value;
+
+            if (!adminCredentials) {
+                showError('Admin authentication missing. Please login again.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/create_creator`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Auth': adminCredentials
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess(`
+                        ✅ Creator account created successfully!
+                        <div class="credentials">
+                            <p><strong>Username:</strong> ${username}</p>
+                            <p><strong>Email:</strong> ${email}</p>
+                            <p><strong>Role:</strong> creator</p>
+                            <p><strong>Password:</strong> ${password}</p>
+                        </div>
+                        <p style="margin-top: 10px; font-size: 13px;">Save these credentials and share with the creator.</p>
+                    `);
+                    
+                    // Clear form
+                    document.getElementById('createCreatorForm').reset();
+                } else {
+                    showError(data.error || 'Failed to create creator account');
+                }
+            } catch (error) {
+                console.error('Error creating creator:', error);
+                showError('Network error. Please check your connection and try again.');
+            }
+        });
+
+        // Update User Role
+        document.getElementById('updateRoleForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            hideMessages();
+
+            const username = document.getElementById('updateUsername').value.trim();
+            const role = document.getElementById('updateRole').value;
+
+            if (!adminCredentials) {
+                showError('Admin authentication missing. Please login again.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/update_user_role`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Admin-Auth': adminCredentials
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        role: role
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess(`✅ User '${username}' role updated to '${role}' successfully!`);
+                    document.getElementById('updateRoleForm').reset();
+                } else {
+                    showError(data.error || 'Failed to update user role');
+                }
+            } catch (error) {
+                console.error('Error updating user role:', error);
+                showError('Network error. Please check your connection and try again.');
+            }
+        });
+
+        // Load Users List
+        document.getElementById('loadUsersBtn').addEventListener('click', async () => {
+            const container = document.getElementById('userListContainer');
+            container.innerHTML = '<div class="loading">Loading users...</div>';
+
+            if (!adminCredentials) {
+                showError('Admin authentication missing. Please login again.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/users`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Admin-Auth': adminCredentials
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const users = data.users || [];
+
+                    if (users.length === 0) {
+                        container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No users found</p>';
+                        return;
+                    }
+
+                    let html = '<div class="user-list">';
+                    users.forEach(user => {
+                        html += `
+                            <div class="user-item">
+                                <p class="username">${user.username || user.email}
+                                    <span class="role">${user.role || 'user'}</span>
+                                </p>
+                                <p><strong>Email:</strong> ${user.email || 'N/A'}</p>
+                                <p><strong>Created:</strong> ${user.created_at ? new Date(user.created_at).toLocaleDateString() : 'N/A'}</p>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    container.innerHTML = html;
+                } else {
+                    const data = await response.json();
+                    container.innerHTML = `<p style="text-align: center; color: #e74c3c; padding: 20px;">${data.error || 'Failed to load users'}</p>`;
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                container.innerHTML = '<p style="text-align: center; color: #e74c3c; padding: 20px;">Network error. Unable to load users.</p>';
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            adminCredentials = null;
+            localStorage.removeItem('adminAuth');
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('createCreatorForm').reset();
+            document.getElementById('userListContainer').innerHTML = '';
+            hideMessages();
+        });
+
+        // Message helpers
+        function showSuccess(message) {
+            const el = document.getElementById('successMessage');
+            el.innerHTML = message;
+            el.classList.add('show');
+        }
+
+        function showError(message) {
+            const el = document.getElementById('errorMessage');
+            el.innerHTML = message;
+            el.classList.add('show');
+        }
+
+        function hideMessages() {
+            document.getElementById('successMessage').classList.remove('show');
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        // Check for existing admin session on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const storedAuth = localStorage.getItem('adminAuth');
+            if (storedAuth) {
+                adminCredentials = storedAuth;
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-const API_PROXY_TARGET = 'https://larry-media-api-axh2emfhfxf3gxaa.germanywestcentral-01.azurewebsites.net'
+const API_PROXY_TARGET = 'http://localhost:7071'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -12,8 +12,8 @@ export default defineConfig({
       '/api': {
         target: API_PROXY_TARGET,
         changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api'),
+        secure: false,
+        rewrite: (path) => path,
       },
     },
   },
